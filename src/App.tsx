@@ -1,35 +1,43 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import { useEffect, useRef, useState } from "react";
+import Example from "./Chart";
+import quickSort, { Frames } from "./utils/quickSort";
+import useInterval from "./hooks/useInterval";
+const data = [3, 2, 1, -5, 2, 11, 23, 1, 30, -2];
 
 function App() {
-  const [count, setCount] = useState(0)
+	const [counter, setCounter] = useState(0);
+	const [runIt, setRunIt] = useState(true);
 
-  return (
-    <>
-      <div>
-        <a href="https://vitejs.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
+	const [values, setValues] = useState<Frames>(data);
+
+	useInterval(
+		(count, setCount) => {
+			if (count >= values.length) {
+				console.log(values.length);
+				setCounter("finish");
+				//reset the counter
+				setCount(1);
+			} else {
+				setCounter(count);
+			}
+		},
+		runIt ? 1000 : null,
+		values.length - 1,
+	);
+
+	useEffect(() => {
+		const frames = quickSort(data);
+
+		setValues(frames);
+	}, []);
+
+	// console.log(values[counter]);
+
+	return (
+		<div style={{ height: "100vh" }}>
+			<Example data={values[counter]?.allElements} />
+		</div>
+	);
 }
 
-export default App
+export default App;
